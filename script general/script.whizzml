@@ -1,0 +1,26 @@
+;; Creación del dataset.
+(define dataset
+  (create-and-wait-dataset 
+    {"source" csv})
+  )
+
+;;Creación de la pca. 
+(define pca
+  (create-and-wait-pca
+    {"dataset" dataset "name" nombre_pca})
+)
+
+;;Creación del cluster.
+(define cluster
+  (create-and-wait-cluster
+    {"dataset" dataset "name" nombre_cluster})
+)
+
+;;Buscar asociaciones.
+(define association
+  (create-and-wait-association
+    {"dataset" dataset "name" nombre_asociacion "max_k" 300  })
+)
+
+;;Final, borrar dataset.
+(delete dataset)

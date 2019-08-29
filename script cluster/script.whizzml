@@ -1,0 +1,22 @@
+(define cluster 
+  (try
+  (if (= algoritmo 1)
+    (prog 
+      (try
+        (create-cluster {"dataset" dataset "name" nombre "critical_value" valor "balance_fields" balanceo })
+          (catch e
+          (log-warn "No se pudo crear el cluster por G-Means: " e)))
+    )
+    (if (= algoritmo 2)
+      (prog 
+        (try
+          (create-cluster {"dataset" dataset "name" nombre "k" valor "balance_fields" balanceo})
+            (catch e
+            (log-warn "No se pudo crear el cluster por K-Means: " e)))
+      )
+      (raise "Introduce un valor para seleccion de algoritmo valido")
+    )
+  ) 
+  (catch e
+        (log-warn "Se ha producido un error: " e)))
+)

@@ -1,0 +1,9 @@
+(define asociaciones
+  (try 
+    (create-and-wait-association {"dataset" dataset
+                                     "name" nombre
+                                     "complement" complemento
+                                     "max_k" max_relaciones
+                                     "search_strategy" estrategia_busqueda})
+       (catch e 
+          (log-warn "No se han podido crear las asociaciones: " e))))
