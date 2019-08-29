@@ -1,0 +1,8 @@
+(define pca
+  (try
+    (create-pca
+      {"dataset" dataset "name" nombre "default_numeric_value" default_numeric_value })
+  (catch e
+          (log-warn "No se pudo crear el pca: " e)))
+    
+)

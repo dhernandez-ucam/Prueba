@@ -1,0 +1,47 @@
+;;Se crea el dataset desde el csv
+
+(define dataset-id
+  (create-and-wait-dataset csv)
+)
+;; Remove the top n anomalies from a dataset 
+
+;; Given an anomaly resource, get the list of its top_anomaly row numbers 
+(define (anomalous-rows a)
+  (map (lambda (x) (x "row_number")) (a ["model" "top_anomalies"])))
+
+;; Dada una lista de números de fila, generar una expresión de flatline que descarta esas filas.
+
+(define (row-filter rows)
+  (let (eqs (map (lambda (n) (flatline "(= (row-number) {n})")) rows))
+    (flatline "(not (or @{eqs}))")))
+
+;; Dado un conjunto de datos y una serie de anomalías, generar uno nuevo que elimina del original las filas anómalas.
+
+(define (normalize-dataset dataset-id n)
+  (try
+;;Genera la anomalía
+    (let (a-id (create-and-wait-anomaly {"dataset" dataset-id "forest_size" tamano_bosque "top_n" n })
+          anomaly (fetch a-id {"exclude" "trees,fields"})
+          rows (anomalous-rows anomaly)
+          filter (row-filter rows))
+      (delete a-id)
+;;Genera el dataset nuevo
+      (create-and-wait-dataset {"name" dataset_filtrado "origin_dataset" dataset-id 
+                                "lisp_filter" filter}))
+  (catch e
+        (log-warn "La ejecucion ha fallado: " e)                          
+                               )
+                               )
+)
+;; Script with parameters dataset-id and n
+(define normalized-dataset (normalize-dataset dataset-id n))
+
+;; Borrar dataset usado
+
+  (try
+    (delete dataset-id)
+    
+     (catch e
+        (log-warn "No se ha podido eliminar el dataset: " e)                          
+                               )
+    )
